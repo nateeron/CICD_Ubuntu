@@ -1,27 +1,67 @@
 เรียกใช้แอป FastAPI ด้วย Uvicorn 
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+sudo apt update
+
+sudo apt install python3-venv
+python3 -m venv myenv
+เข้าไปที่ 
+source myenv/bin/activate
+แล้วติดตั้ง 
+pip3 install fastapi
+pip install package-name
+แล้วออก 
+deactivate
+
+
+sudo apt install python3-pip -y
+apt install uvicorn
+
+
+uvicorn app:app --host 0.0.0.0 --port 200 --reload
 
 
 เพื่อให้แน่ใจว่าแอป FastAPI ทำงานอย่างต่อเนื่อง (เช่น เมื่อรีบูตเครื่อง) คุณสามารถตั้งค่าบริการ systemd สำหรับแอปนั้นได้
 
 สร้างไฟล์บริการ:/etc/systemd/system/fastapi.service
-
+sudo nano /etc/systemd/system/fastapi.service
 ---------------------------------------------------------------------------------
 [Unit]
-Description=FastAPI GitHub Webhook
+Description=FastAPI Application
+After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-WorkingDirectory=/root/github-webhook
-Restart=always
+# Specify the user and group to run the service
 User=root
+Group=root
+
+# Set the working directory to your FastAPI project directory
+WorkingDirectory=/root/cicd
+
+# Activate the virtual environment and run Uvicorn
+ExecStart=/root/cicd/myenv/bin/uvicorn app:app --host 0.0.0.0 --port 200 --reload
+
+# Restart the service automatically if it crashes
+Restart=always
+
+# Environment settings (optional, can be removed if not needed)
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
 
 [Install]
 WantedBy=multi-user.target
-
 ---------------------------------------------------------------------------------
-
-sudo systemctl enable fastapi
+sudo systemctl daemon-reload
 sudo systemctl start fastapi
+sudo systemctl enable fastapi
+sudo systemctl status fastapi
+
+View Logs for Debugging
+sudo journalctl -u fastapi -f
+
+Contron 
+sudo systemctl start fastapi
+sudo systemctl stop fastapi
+sudo systemctl restart fastapi
+
 
 วิธีนี้จะทำให้แน่ใจว่าแอป FastAPI ของคุณจะเริ่มทำงานโดยอัตโนมัติเมื่อระบบรีบูต

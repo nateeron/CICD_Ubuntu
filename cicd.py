@@ -6,6 +6,11 @@ from typing import Dict
 
 app = FastAPI()
 
+@app.post("/run")
+def run():
+    return "OK Rin CICD V. 0.0.1"
+
+
 # Define the GitHub webhook endpoint
 @app.post("/github-webhook")
 async def github_webhook(request: Request):
@@ -16,9 +21,10 @@ async def github_webhook(request: Request):
         return {"message": "Not a main branch push event"}
 
     # The directory where the repository will be cloned or pulled
-    repo_dir = "/root/MyProject"
+    repo_dir = "/root/P"
 
     # Pull the latest changes from the GitHub repo
+    # git -C /root/MyProject pull
     pull_command = f"git -C {repo_dir} pull"
     pull_process = subprocess.Popen(pull_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = pull_process.communicate()
