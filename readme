@@ -1,0 +1,27 @@
+เรียกใช้แอป FastAPI ด้วย Uvicorn 
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+
+เพื่อให้แน่ใจว่าแอป FastAPI ทำงานอย่างต่อเนื่อง (เช่น เมื่อรีบูตเครื่อง) คุณสามารถตั้งค่าบริการ systemd สำหรับแอปนั้นได้
+
+สร้างไฟล์บริการ:/etc/systemd/system/fastapi.service
+
+---------------------------------------------------------------------------------
+[Unit]
+Description=FastAPI GitHub Webhook
+
+[Service]
+ExecStart=/usr/local/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+WorkingDirectory=/root/github-webhook
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+---------------------------------------------------------------------------------
+
+sudo systemctl enable fastapi
+sudo systemctl start fastapi
+
+วิธีนี้จะทำให้แน่ใจว่าแอป FastAPI ของคุณจะเริ่มทำงานโดยอัตโนมัติเมื่อระบบรีบูต
